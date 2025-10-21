@@ -1516,11 +1516,10 @@ def validations(insertbtn, city_name, city_options, country_name, linkurl, coord
             print(city_name)
             # IDs without reading tables
             video_id, cut_id = generate_ids(city_name,df_geo,linkurl)
-            print(video_id,cut_id)
             
+            if "None" in scene_desc:
+                scene_desc = [scene_desc]           
      
-            
-        
             # Build row dicts with cached schema order
             # Geo row
             geo_values_by_name = {
