@@ -44,7 +44,7 @@ from google.oauth2.service_account import Credentials
 from oauth2client.client import GoogleCredentials
 from google.oauth2 import service_account
 from google.cloud import bigquery
-
+from google.cloud import storage
 
 
 
@@ -181,18 +181,6 @@ button_style10 = {
     "textAlign": "center",
     "boxShadow": "0 8px 16px rgba(0, 0, 0, 0.2)",
     "transition": "all 0.3s ease-in-out"
-}
-
-img_disclamer_style = {
-    'color':'red',
-    'fontSize' : '24px',
-    "font-weight": 'bold',
-    "bottom": "150px",
-    "right": "30px",
-    "position": "absolute",
-    'display':'none'    
-    
-    
 }
 
 button_style2 = {
@@ -361,7 +349,7 @@ def is_valid_social_url(url: str) -> bool:
 
     return any(pattern.match(url) for pattern in patterns.values())
 
-from google.cloud import storage
+
 def upload_file_to_bucket(bucket_name, source_file_path, destination_blob_name):
     """
     Uploads a file to a GCP bucket.
@@ -779,7 +767,7 @@ def download_upload_img(city_name,city_code,contents,file_n):
     
     city_code = str.lower(city_code)
     # Optional: save file locally
-    save_path = os.path.join('C:/Videos_Downloaded', file_n)
+    save_path = os.path.join('home/ubuntu/merged-dashboard', file_n)
     with open(save_path, 'wb') as f:
         f.write(data)
         
@@ -1196,12 +1184,8 @@ def insert_tab_layout():
                         ], width=3),
                         dbc.Col([
                             dbc.Button("Insert", id='insert', color='success', n_clicks=0, style=button_style1),
-                            html.Div([
-                                "Please keep in mind image inserting might take longer",
-                                html.Br(),
-                                "since it also downloads & uploads the data"
-                            ], id='image_disclamer', style=img_disclamer_style),
-                            dbc.Modal([dbc.ModalHeader("Annotation Details"), dbc.ModalBody(html.Div(id="confirmation-message", style=modal_style))],
+
+                            dbc.Modal([dbc.ModalHeader("Video Details"), dbc.ModalBody(html.Div(id="confirmation-message", style=modal_style))],
                                       id="confirmation-modal", is_open=False),
                             dbc.Modal([dbc.ModalHeader("ChatGPT Results"), dbc.ModalBody(html.Div(id="gpt_res", style=modal_style))],
                                       id="gpt_modal", is_open=False),
@@ -1491,7 +1475,6 @@ def check_link_exists(n_clicks, link):
     Output("output_pic", "style"),
     Output("upload_pic", "contents", allow_duplicate=True),
     Output("upload_pic", "filename", allow_duplicate=True),
-    Output("image_disclamer",'style'),
     
     Input("file_type", "value"),
     Input("sources", "value"),
@@ -1501,17 +1484,15 @@ def check_link_exists(n_clicks, link):
     State("dynamic_image", "style"),
     State("upload_pic", "style"),
     State("output_pic", "style"),
-    State("image_disclamer",'style'),
     prevent_initial_call="initial_duplicate"
 )
-def toggle_video_or_image(file_type, src, player_state, timing_state, image_state, pic_upload, pic_output,disclamer_state):
+def toggle_video_or_image(file_type, src, player_state, timing_state, image_state, pic_upload, pic_output):
     # Default style fallbacks
     if player_state is None: player_state = {}
     if timing_state is None: timing_state = {}
     if image_state is None: image_state = {}
     if pic_upload is None: pic_upload = {}
     if pic_output is None: pic_output = {}
-    if disclamer_state is None: disclamer_state = {}
 
     # 🚀 Always reset upload contents + filename when callback fires
     clear_contents = ''
@@ -1525,14 +1506,12 @@ def toggle_video_or_image(file_type, src, player_state, timing_state, image_stat
             image_state['display'] = 'none'
             pic_upload['display'] = 'block'
             pic_output['display'] = 'block'
-            disclamer_state['display'] = 'block'
         else:
             player_state['display'] = 'none'
             timing_state['display'] = 'none'
             image_state['display'] = 'block'
             pic_upload['display'] = 'none'
             pic_output['display'] = 'none'
-            disclamer_state['display'] = 'block'
 
     # 🎥 Video mode
     else:
@@ -1541,7 +1520,6 @@ def toggle_video_or_image(file_type, src, player_state, timing_state, image_stat
         image_state['display'] = 'none'
         pic_upload['display'] = 'none'
         pic_output['display'] = 'none'
-        disclamer_state['display'] = 'none'
 
     return (
         player_state,
@@ -1550,8 +1528,7 @@ def toggle_video_or_image(file_type, src, player_state, timing_state, image_stat
         pic_upload,
         pic_output,
         clear_contents,
-        clear_filename,
-        disclamer_state
+        clear_filename
     )
     
 
@@ -3996,4 +3973,4 @@ app.layout = html.Div(
 )                      
              
 if __name__ == "__main__":
-    app.run(host='100.118.47.56', port=8050, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
